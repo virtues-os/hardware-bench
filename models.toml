@@ -1,0 +1,57 @@
+# Pinned model revisions for the bench. SHA256 values are computed on first
+# successful download by `just fetch-models` (or by any workload that loads a
+# model) and written back into this file. Commit the result. Subsequent runs
+# on any board verify downloaded files against these hashes and refuse to
+# proceed on mismatch — MLPerf-style integrity gate.
+#
+# The bench measures two precisions of each model as separate KPIs:
+#   - fp32: full precision baseline
+#   - int8: proposed prod default (~3-4x faster on ARM CPU, native to Hexagon NPU)
+#
+# Both models ship int8 variants directly on HF, so the harness never
+# quantizes anything itself — first-run downloads + SHA-pins both files.
+
+[embed]
+repo = "nomic-ai/nomic-embed-text-v1.5"
+revision = "e9b6763023c676ca8431644204f50c2b100d9aab"
+shared_files = [
+    "tokenizer.json",
+    "tokenizer_config.json",
+    "special_tokens_map.json",
+    "config.json",
+]
+files_fp32 = ["onnx/model.onnx"]
+files_int8 = ["onnx/model_quantized.onnx"]
+
+[embed.sha256]
+"tokenizer.json" = "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66"
+"tokenizer_config.json" = "d7e0000bcc80134debd2222220427e6bf5fa20a669f40a0d0d1409cc18e0a9bc"
+"special_tokens_map.json" = "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a"
+"config.json" = "9ab00bd92cee80a569f708140b7b6c1661a65891ff3765b1519e181ba2f2c92b"
+"onnx/model.onnx" = "147d5aa88c2101237358e17796cf3a227cead1ec304ec34b465bb08e9d952965"
+"onnx/model_quantized.onnx" = "b4342336debaea79de872370664b0aaeb67dea4605513d00ee236ea871a81f27"
+
+[rerank]
+# Switched from rozgo/bge-reranker-v2-m3 to jina-reranker-v2-base-multilingual:
+# ~half the params (278M vs 568M), comparable retrieval quality, ~2x faster
+# on ARM CPU before quantization, and ships an int8 ONNX directly (no
+# self-quantization or external-data sidecar needed). See
+# docs/virtues-migration-spec.md for the prod migration story.
+repo = "jinaai/jina-reranker-v2-base-multilingual"
+revision = "9cfeff2df7d40d1b78e75e5e9cebec92a99813c9"
+shared_files = [
+    "tokenizer.json",
+    "tokenizer_config.json",
+    "special_tokens_map.json",
+    "config.json",
+]
+files_fp32 = ["onnx/model.onnx"]
+files_int8 = ["onnx/model_int8.onnx"]
+
+[rerank.sha256]
+"tokenizer.json" = "3a56def25aa40facc030ea8b0b87f3688e4b3c39eb8b45d5702b3a1300fe2a20"
+"tokenizer_config.json" = "4bf8eb7ce5367af6f7bcef4bef6fa5945c345ee5a7ecbe6464712a7d96f98015"
+"special_tokens_map.json" = "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+"config.json" = "af16fe07e9b623d5a47b42bde0daba1b6510344212c03363145c51a81e9e4572"
+"onnx/model.onnx" = "0ef3f7978f7bc52360864d74edc1a0e03d159af770a7767c4d5943496e616012"
+"onnx/model_int8.onnx" = "c5220cf8fe023f8aa0ed2a3eb787d4451a7f17cf53f6b787e35718dd4b8815c3"

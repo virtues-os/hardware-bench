@@ -1,0 +1,80 @@
+{
+  "harness_version": "0.1.0",
+  "board": "mac-m5pro",
+  "board_config": {
+    "slug": "mac-m5pro",
+    "display_name": "Apple M5 Pro (smoke test)",
+    "soc": "Apple M5 Pro",
+    "cpu_model": "Apple M5 Pro",
+    "ram_gb": 48,
+    "storage": "nvme",
+    "cooling": "active_with_heatsink",
+    "firmware": "macOS 26.4.1 (25E253)",
+    "execution_providers": [
+      "CoreMLExecutionProvider"
+    ],
+    "os": {
+      "intended": "macOS 26.x (Tahoe)",
+      "notes": "Smoke-test target only. No governor manipulation, no thermal probing."
+    },
+    "thermal": {
+      "zones": []
+    },
+    "power": {
+      "hwmon_paths": []
+    }
+  },
+  "started_at": "2026-05-12T21:41:48.519015+00:00",
+  "elapsed_s": 15.88258808403043,
+  "system": {
+    "kernel": "25.4.0",
+    "machine": "arm64",
+    "python": "3.13.13",
+    "ort_version": "1.26.0",
+    "available_eps": [
+      "CoreMLExecutionProvider",
+      "AzureExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "os_release": {},
+    "governor": null,
+    "governor_per_policy": {},
+    "ram_total_mb": null
+  },
+  "pass_1a_stock": {
+    "governors": {},
+    "k0_npu_gate": null,
+    "embed": {
+      "CoreMLExecutionProvider": {
+        "int8": {
+          "provider": "CoreMLExecutionProvider",
+          "variant": "int8",
+          "k3_throughput_emb_per_sec": 138.22450495390814,
+          "k3_throughput_std_pct": 8.67051267849699,
+          "k4_p95_ms": 20.311166,
+          "k4_latency": {
+            "n": 200,
+            "mean_ms": 18.627830785,
+            "std_ms": 1.0340019870017219,
+            "p50_ms": 18.469417,
+            "p95_ms": 20.311166,
+            "p99_ms": 21.993375,
+            "min_ms": 16.968166,
+            "max_ms": 24.708083
+          }
+        }
+      }
+    },
+    "rerank": {
+      "CoreMLExecutionProvider": {
+        "int8": {
+          "error": "Traceback (most recent call last):\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/src/virtues_bench/bench.py\", line 44, in _safe\n    result = fn(*args, **kwargs)\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/src/virtues_bench/workloads/rerank.py\", line 52, in run_rerank\n    latency = measure(\n        lambda: _run_rerank(sess, tokenizer, query, candidates),\n        n=RERANK_N,\n        warmup=RERANK_WARMUP,\n    )\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/src/virtues_bench/timing.py\", line 31, in measure\n    fn()\n    ~~^^\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/src/virtues_bench/workloads/rerank.py\", line 53, in <lambda>\n    lambda: _run_rerank(sess, tokenizer, query, candidates),\n            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/src/virtues_bench/workloads/rerank.py\", line 43, in _run_rerank\n    sess.run(None, feeds)\n    ~~~~~~~~^^^^^^^^^^^^^\n  File \"/Users/adamjace/Documents/GitHub/hardware-bench/.venv/lib/python3.13/site-packages/onnxruntime/capi/onnxruntime_inference_collection.py\", line 322, in run\n    return self._sess.run(output_names, input_feed, run_options)\n           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nonnxruntime.capi.onnxruntime_pybind11_state.Fail: [ONNXRuntimeError] : 1 : FAIL : Non-zero status code returned while running 131266094132794271_CoreML_131266094132794271_3 node. Name:'CoreMLExecutionProvider_131266094132794271_CoreML_131266094132794271_3_3' Status Message: Error executing model: Unable to compute the prediction using a neural network model. It can be an invalid input data or broken/unsupported model (error code: -1).\n"
+        }
+      }
+    },
+    "pgvector": null,
+    "thermal_power": null,
+    "memory": null
+  },
+  "pass_1b_performance": null
+}

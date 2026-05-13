@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.venv/
+.uv/
+uv.lock.bak
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Frontend
+web/node_modules/
+web/.svelte-kit/
+web/build/
+web/.vercel/
+
+# Local HF model cache lives under ~/.cache/huggingface by default. If a
+# user opts to cache inside the repo, ignore it.
+.models-cache/

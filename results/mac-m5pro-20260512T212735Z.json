@@ -1,0 +1,93 @@
+{
+  "harness_version": "0.1.0",
+  "board": "mac-m5pro",
+  "board_config": {
+    "slug": "mac-m5pro",
+    "display_name": "Apple M5 Pro (smoke test)",
+    "soc": "Apple M5 Pro",
+    "cpu_model": "Apple M5 Pro",
+    "ram_gb": 48,
+    "storage": "nvme",
+    "cooling": "active_with_heatsink",
+    "firmware": "macOS 26.4.1 (25E253)",
+    "os": {
+      "intended": "macOS 26.x (Tahoe)",
+      "notes": "Smoke-test target only. No governor manipulation, no thermal probing.",
+      "execution_providers": [
+        "CPUExecutionProvider"
+      ]
+    },
+    "thermal": {
+      "zones": []
+    },
+    "power": {
+      "hwmon_paths": []
+    }
+  },
+  "started_at": "2026-05-12T21:22:37.781194+00:00",
+  "elapsed_s": 297.72392824996496,
+  "system": {
+    "kernel": "25.4.0",
+    "machine": "arm64",
+    "python": "3.13.13",
+    "ort_version": "1.26.0",
+    "available_eps": [
+      "CoreMLExecutionProvider",
+      "AzureExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "os_release": {},
+    "governor": null,
+    "governor_per_policy": {},
+    "ram_total_mb": null
+  },
+  "pass_1a_stock": {
+    "governors": {},
+    "k0_npu_gate": null,
+    "embed": {
+      "CPUExecutionProvider": {
+        "int8": {
+          "provider": "CPUExecutionProvider",
+          "variant": "int8",
+          "k3_throughput_emb_per_sec": 417.8103863891736,
+          "k3_throughput_std_pct": 12.707813478967433,
+          "k4_p95_ms": 5.083667,
+          "k4_latency": {
+            "n": 200,
+            "mean_ms": 4.627433935,
+            "std_ms": 0.31341992482808234,
+            "p50_ms": 4.631709,
+            "p95_ms": 5.083667,
+            "p99_ms": 5.532667,
+            "min_ms": 3.858291,
+            "max_ms": 5.700875
+          }
+        }
+      }
+    },
+    "rerank": {
+      "CPUExecutionProvider": {
+        "int8": {
+          "provider": "CPUExecutionProvider",
+          "variant": "int8",
+          "k1_p95_ms": 1366.808125,
+          "k2_p99_ms": 1396.39775,
+          "latency": {
+            "n": 200,
+            "mean_ms": 1332.9779958,
+            "std_ms": 24.845220278738672,
+            "p50_ms": 1335.60725,
+            "p95_ms": 1366.808125,
+            "p99_ms": 1396.39775,
+            "min_ms": 1243.262958,
+            "max_ms": 1418.09525
+          }
+        }
+      }
+    },
+    "pgvector": null,
+    "thermal_power": null,
+    "memory": null
+  },
+  "pass_1b_performance": null
+}

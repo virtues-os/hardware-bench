@@ -1,0 +1,46 @@
+# Orange Pi 5 Plus — dev/validation board (RK3588).
+# Used to debug the harness end-to-end before Dragon Q6A arrives.
+
+slug = "orange-pi-5-plus"
+display_name = "Orange Pi 5 Plus"
+soc = "Rockchip RK3588"
+cpu_model = "4x Cortex-A76 + 4x Cortex-A55"
+
+# RAM SKU under test. OPi5+ ships in 4 / 8 / 16 / 32.
+ram_gb = 8
+
+# Where the OS rootfs and Postgres data dir live. The SPL/bootloader
+# medium doesn't matter — only where files are read/written at runtime.
+# One of: emmc, nvme, sd, usb. Dramatically affects K8 (pgvector ANN)
+# and K9 (swap behavior under load).
+storage = "nvme"
+
+# Cooling setup. One of: none, passive_heatsink, active_fan, active_with_heatsink
+cooling = "active_with_heatsink"
+
+# Firmware / bootloader version. Fill in once known.
+firmware = "TODO"
+
+# Execution providers to test. CPU only on dev target; ARM NN can be added
+# later if a quick test shows meaningful uplift.
+execution_providers = ["CPUExecutionProvider"]
+
+# Intended OS image. The harness logs /etc/os-release at runtime and
+# warns (does not refuse) on mismatch. Re-run after flashing a different
+# image to get a separate result file.
+[os]
+intended = "Armbian 24.x (Debian 12 base)"  # update to actual flashed image
+notes = ""
+
+# Discover on first boot:
+#   find /sys/class/thermal/thermal_zone*/type -exec cat {} \;
+# Fill in the zone whose `type` is the SoC junction.
+[thermal]
+zones = []  # e.g. ["/sys/class/thermal/thermal_zone0/temp"]
+
+# Discover on first boot:
+#   ls /sys/class/hwmon/
+# Some boards expose nothing here — leave empty and use --idle-power-w /
+# --peak-power-w CLI flags from an external USB meter.
+[power]
+hwmon_paths = []

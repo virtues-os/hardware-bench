@@ -1,0 +1,71 @@
+# Radxa Dragon Q6A — V1 candidate (Qualcomm, 12 TOPS Hexagon NPU).
+# The K0 gate (workloads/validate_npu.py) decides whether the NPU pitch
+# actually pays off for our reranker workload.
+
+slug = "dragon-q6a"
+display_name = "Radxa Dragon Q6A"
+soc = "Qualcomm QCS6490 (Dragonwing)"
+cpu_model = "4x Cortex-A78 + 4x Cortex-A55"
+
+# RAM SKU under test. Q6A ships in 4 / 6 / 8 / 12.
+ram_gb = 6
+
+# Where the OS rootfs and Postgres data dir live. After NVMe is mounted at
+# /mnt/nvme and Postgres' data dir moved there, set storage = "nvme".
+# Boot device is eMMC/SD (sda3 in `lsblk`); NVMe is a 128GB SSSTC CL1-3D128-Q11
+# attached but unformatted as of first boot.
+storage = "nvme"
+
+# Cooling setup. One of: none, passive_heatsink, active_fan, active_with_heatsink
+cooling = "passive_heatsink"
+
+# Vendor kernel from `uname -a`. Bumped by Radxa releases.
+firmware = "6.18.2-3-qcom"
+
+# QNNExecutionProvider requires Qualcomm's QNN SDK installed on the board
+# AND onnxruntime-qnn (not stock onnxruntime, version 2.1.0 on PyPI).
+# Install steps documented in docs/q6a-setup.md.
+execution_providers = ["CPUExecutionProvider", "QNNExecutionProvider"]
+
+# Intended OS image. The harness logs /etc/os-release at runtime and
+# warns (does not refuse) on mismatch. Re-run after flashing a different
+# image to get a separate result file.
+[os]
+intended = "Ubuntu 24.04 LTS (Radxa qcom kernel)"
+notes = "Kernel 6.18.2-3-qcom (vendor build, Feb 2026). schedutil governor on all policies."
+
+# Thermal zones to poll during the K5 sustained-load loop. Picked these out
+# of 34 available on the QCS6490:
+#   - cpuss0/1 = CPU clusters (where compute work shows up)
+#   - nspss0/1 = NSP (Hexagon NPU) — climbs only when QNN HTP is actually
+#     doing work, so this is the smoking gun for "NPU engaged" during inference
+#   - msm-skin = approx case/skin temp, relevant to bookshelf chassis story
+#   - ddr = memory subsystem (sanity)
+[thermal]
+zones = [
+    "/sys/class/thermal/thermal_zone5/temp",   # cpuss0-thermal
+    "/sys/class/thermal/thermal_zone6/temp",   # cpuss1-thermal
+    "/sys/class/thermal/thermal_zone18/temp",  # nspss0-thermal (NPU)
+    "/sys/class/thermal/thermal_zone19/temp",  # nspss1-thermal (NPU)
+    "/sys/class/thermal/thermal_zone32/temp",  # msm-skin-thermal
+    "/sys/class/thermal/thermal_zone21/temp",  # ddr-thermal
+]
+
+# Q6A doesn't expose power rails via hwmon (all 34 hwmon entries are
+# thermal sensors + the NVMe). K6/K7 require either an external USB meter
+# (--idle-power-w / --peak-power-w CLI flags) or implementation against
+# Qualcomm's BCM/RPMh power telemetry path (out of V1 scope).
+[power]
+hwmon_paths = []
+
+[qnn]
+# Backend library — resolved at runtime via LD_LIBRARY_PATH (set by
+# QAIRT's bin/envsetup.sh, which the q6a-bootstrap.sh script sources).
+# Pass an absolute path here if envsetup.sh isn't sourced before bench runs.
+backend_path = "libQnnHtp.so"
+# Backend type — must be "htp" for NPU. "cpu" inside QNN = software
+# emulation (useless); "gpu" = Adreno (not the V1 acceleration story).
+backend_type = "htp"
+# The bench enforces `session.disable_cpu_ep_fallback=1` for any QNN session
+# so silent CPU fallback (the standard "I thought my NPU was working" trap)
+# hard-errors instead of producing misleading numbers.

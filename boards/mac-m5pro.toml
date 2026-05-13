@@ -1,0 +1,37 @@
+# Apple M5 Pro 48GB / macOS 26.x — local dev smoke test.
+#
+# Not a real benchmark target. Used to validate the Python harness end-to-end
+# before SSH'ing into ARM Linux boards. macOS doesn't expose cpufreq or
+# /sys/class/thermal, so pass 1b (performance governor) and the thermal/power
+# loop are skipped via CLI flags:
+#
+#   just bench mac-m5pro
+#   # or directly:
+#   uv run python -m virtues_bench.bench --board mac-m5pro \
+#       --skip-perf-pass --skip-thermal --skip-pgvector
+
+slug = "mac-m5pro"
+display_name = "Apple M5 Pro (smoke test)"
+soc = "Apple M5 Pro"
+cpu_model = "Apple M5 Pro"
+
+ram_gb = 48
+storage = "nvme"
+cooling = "active_with_heatsink"
+firmware = "macOS 26.4.1 (25E253)"
+
+# CoreML EP is the gateway to GPU + ANE on Apple Silicon. On dynamically-
+# quantized int8 models it often falls back silently (ANE has strict quant-
+# format requirements). CPU baseline already captured in earlier runs;
+# this round measures CoreML in isolation.
+execution_providers = ["CoreMLExecutionProvider"]
+
+[os]
+intended = "macOS 26.x (Tahoe)"
+notes = "Smoke-test target only. No governor manipulation, no thermal probing."
+
+[thermal]
+zones = []
+
+[power]
+hwmon_paths = []
