@@ -8,7 +8,10 @@ requires-python = ">=3.11"
 authors = [{ name = "Virtues" }]
 
 dependencies = [
-    "onnxruntime>=1.18.0",
+    # ORT — stock build everywhere except aarch64 Linux (where we use the
+    # Radxa-blessed onnxruntime-qnn fork for Hexagon HTP support).
+    "onnxruntime>=1.18.0; sys_platform != 'linux' or platform_machine != 'aarch64'",
+    "onnxruntime-qnn; sys_platform == 'linux' and platform_machine == 'aarch64'",
     "transformers>=4.40.0",
     "tokenizers>=0.19.0",
     "huggingface-hub>=0.23.0",
@@ -18,6 +21,12 @@ dependencies = [
     "psutil>=5.9.0",
     "tomlkit>=0.12.0",
 ]
+
+[tool.uv.sources]
+# Radxa-recommended onnxruntime build with QNN ExecutionProvider for the
+# Dragon Q6A (Hexagon HTP v68). Only ships a cp312 wheel — the project
+# requires Python 3.12 on aarch64 Linux for that reason.
+onnxruntime-qnn = { url = "https://github.com/ZIFENG278/onnxruntime/releases/download/v1.23.2/onnxruntime_qnn-1.23.2-cp312-cp312-linux_aarch64.whl" }
 
 [project.scripts]
 virtues-bench = "virtues_bench.bench:main"
